@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Invoice</title>
+    <style>
+        body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+        input, select { padding: 5px; margin: 5px; }
+        button { padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Edit Invoice</h1>
+    <form method="POST">
+
+        <label>Customer Name</label><br>
+        <input name="customer_name" value="{{ invoice[2] }}" required><br><br>
+
+        <label>Customer Address</label><br>
+        <input name="customer_address" value="{{ invoice[3] }}" required><br><br>
+
+        <label>Date</label><br>
+        <input name="date" value="{{ invoice[4] }}" required><br><br>
+
+        <label>Invoice Number</label><br>
+        <input name="invoice_no" value="{{ invoice[5] }}" required><br><br>
+
+        <label>Description</label><br>
+        <input name="description" value="{{ invoice[6] }}" required><br><br>
+
+        <label>Invoice Total</label><br>
+        <input name="invoice_total" value="{{ invoice[7] }}" required><br><br>
+        
+        <label>Status</label><br>
+        <select name="status">
+            <option value="Unpaid" {% if invoice[8] == "Unpaid" %}selected{% endif %}>Unpaid</option>
+            <option value="Paid" {% if invoice[8] == "Paid" %}selected{% endif %}>Paid</option>
+        </select><br><br>
+ 
+        <button type="submit">Update Invoice</button>
+ 
+    </form>
+    <a href="/">Back to Home</a>
+</body>
+</html>

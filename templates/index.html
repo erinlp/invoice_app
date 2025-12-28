@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoices</title>
+    <style>
+        body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; background: #fff; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #eee; }
+        input { padding: 5px; margin: 5px; }
+        button { padding: 5px 10px; }
+        .logout { float: right; }
+    </style>
+</head>
+<body>
+    <h1>Invoice</h1>
+    <a href="/logout" class="logout">Logout</a>
+    <h2>Welcome, {{ session.username }}</h2>
+ 
+    <h3>Add New Invoice</h3>
+    <form method="POST">
+        <input name="customer_name" placeholder="Customer Name" required>
+        <input name="customer_address" placeholder="Customer Address" required>
+        <input name="date" placeholder="DD/MM/YYYY" required>
+        <input name="invoice_no" placeholder="Invoice No" required>
+        <input name="description" placeholder="Description" required>
+        <input name="invoice_total" placeholder="Total" required>
+        <button type="submit">Add Invoice</button>
+    </form>
+ 
+    <h3>Invoices</h3>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Invoice No</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        {% for invoice in invoices %}
+        <tr>
+            <td>{{ invoice[2] }}</td>
+            <td>{{ invoice[5] }}</td>
+            <td>£{{ "%.2f"|format(invoice[7]) }}</td>
+            <td>
+                {% if invoice[8] %}
+                    {{ invoice[8] }}
+                {% else %}
+                    Unpaid
+                {% endif %}
+            </td>
+            <td>
+                <a href="/edit/{{ invoice[0] }}">Edit</a> |
+                <a href="/delete/{{ invoice[0] }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
