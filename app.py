@@ -8,8 +8,10 @@ app.secret_key = "your_secret_key_here"  # Secret key for session management, ne
  
 # Database functions 
 
+import os
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "database.db")   
 def get_db():
-    return sqlite3.connect("database.db")   # Function to get a connection to the database
+    return sqlite3.connect(DB_PATH)
 
 def init_db():  
     conn = get_db()     # Connect to database
