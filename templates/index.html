@@ -50,6 +50,11 @@
     <h2>Welcome, {{ session.username }}</h2> <!-- Displays a welcome message with the username stored in the session -->
  
     <h3>Add New Invoice</h3> <!-- Subheading for adding a new invoice -->
+
+    {% if error %}   <!-- This part displays the error message (if any) -->
+        <p style="color: red; margin-bottom: 10px;">{{ error }}</p>
+    {% endif %}
+
     <form method="POST"> <!-- Form to submit a new invoice -->
         <input name="customer_name" placeholder="Customer Name" required> <!-- Input for customer name -->
         <input name="customer_address" placeholder="Customer Address" required> <!-- Input for customer address -->
