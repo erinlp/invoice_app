@@ -1,29 +1,78 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sign Up</title>
+<!DOCTYPE html> <!-- Declares the document type as HTML5 to ensure proper rendering -->
+<html> <!-- Start of the HTML document -->
+<head> <!-- Head section for metadata and styling -->
+    <title>Sign Up</title> <!-- Title of the page shown on the browser tab -->
+
     <style>
-        body { font-family: Arial; background: #f4f4f4; text-align: center; padding-top: 50px; }
-        .container { background: #fff; padding: 30px; margin: auto; width: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
-        button { padding: 10px 20px; border: none; border-radius: 5px; background-color: #4CAF50; color: white; cursor: pointer; }
-        button:hover { background-color: #45a049; }
-        .error { color: red; margin-bottom: 15px; }
-        a { text-decoration: none; color: #333; }
+        /* CSS to style the page */
+        body { 
+            font-family: Arial; /* Sets the font for the page to Arial */
+            background: #f4f4f4; /* Light grey background color for the body */
+            text-align: center; /* Centers the text on the page */
+            padding-top: 50px; /* Adds space from the top of the page */
+        }
+
+        .container { 
+            background: #fff; /* White background for the sign-up container */
+            padding: 30px; /* Adds padding inside the container */
+            margin: auto; /* Centers the container horizontally */
+            width: 300px; /* Sets the width of the container */
+            border-radius: 10px; /* Rounds the corners of the container */
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Adds a subtle shadow around the container */
+        }
+
+        input { 
+            width: 90%; /* Sets the width of input fields to 90% of the container */
+            padding: 10px; /* Adds padding inside the input fields */
+            margin: 10px 0; /* Adds vertical spacing between input fields */
+            border-radius: 5px; /* Rounds the corners of input fields */
+            border: 1px solid #ccc; /* Light grey border for input fields */
+        }
+
+        button { 
+            padding: 10px 20px; /* Adds padding to the submit button */
+            border: none; /* Removes the border around the button */
+            border-radius: 5px; /* Rounds the corners of the button */
+            background-color: #4CAF50; /* Green background color for the button */
+            color: white; /* White text color */
+            cursor: pointer; /* Changes the cursor to a pointer when hovering over the button */
+        }
+
+        button:hover { 
+            background-color: #45a049; /* Darker green on hover to indicate interactivity */
+        }
+
+        .error { 
+            color: red; /* Red text for error messages */
+            margin-bottom: 15px; /* Adds space below error messages */
+        }
+
+        a { 
+            text-decoration: none; /* Removes underline from links */
+            color: #333; /* Dark grey color for links */
+        }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h2>Sign Up</h2>
+<body> <!-- Body section of the page -->
+
+    <div class="container"> <!-- Main container for the sign-up form -->
+        <h2>Sign Up</h2> <!-- Heading for the sign-up form -->
+
+        <!-- Conditional error message display (if an error exists, it will show) -->
         {% if error %}
-            <div class="error">{{ error }}</div>
+            <div class="error">{{ error }}</div> <!-- Displays the error message (if any) in red -->
         {% endif %}
-        <form method="POST">
-            <input type="text" name="username" placeholder="Username" required><br>
-            <input type="password" name="password" placeholder="Password" required><br>
-            <button type="submit">Sign Up</button>
+
+        <!-- Sign-up form -->
+        <form method="POST"> <!-- Form to submit sign-up credentials using POST -->
+            <input type="text" name="username" placeholder="Username" required><br> <!-- Input for username -->
+            <input type="password" name="password" placeholder="Password" required><br> <!-- Input for password -->
+            <button type="submit">Sign Up</button> <!-- Submit button to create a new account -->
         </form>
-        <p>Already have an account? <a href="/login">Login</a></p>
+
+        <!-- Link to the login page for users who already have an account -->
+        <p>Already have an account? <a href="/login">Login</a></p> <!-- "Login" link that directs to the login page -->
     </div>
+
 </body>
 </html>

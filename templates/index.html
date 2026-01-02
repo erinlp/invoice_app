@@ -1,60 +1,99 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Invoices</title>
+<!DOCTYPE html> <!-- Declares the document type as HTML5, which ensures the page is rendered as HTML5 -->
+<html> <!-- Start of the HTML document -->
+<head> <!-- Head section where the title and styles are defined -->
+    <title>Invoices</title> <!-- Page title displayed on the browser tab -->
+
     <style>
-        body { font-family: Arial; background: #f4f4f4; padding: 20px; }
-        table { border-collapse: collapse; width: 100%; background: #fff; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        th { background: #eee; }
-        input { padding: 5px; margin: 5px; }
-        button { padding: 5px 10px; }
-        .logout { float: right; }
+        /* Internal CSS to style the page */
+        body { 
+            font-family: Arial; /* Sets the font for the page to Arial */
+            background: #f4f4f4; /* Light grey background color for the body */
+            padding: 20px; /* Adds padding around the body content */
+        }
+
+        table { 
+            border-collapse: collapse; /* Ensures table borders are collapsed into a single line */
+            width: 100%; /* Sets the table width to fill the available space */
+            background: #fff; /* White background color for the table */
+        }
+
+        th, td { 
+            border: 1px solid #ccc; /* Adds a light grey border to table headers and data cells */
+            padding: 8px; /* Adds padding inside the table cells */
+            text-align: left; /* Aligns the text in table cells to the left */
+        }
+
+        th { 
+            background: #eee; /* Sets the background color of table headers to light grey */
+        }
+
+        input { 
+            padding: 5px; /* Adds padding inside input fields */
+            margin: 5px; /* Adds margin around input fields */
+        }
+
+        button { 
+            padding: 5px 10px; /* Adds padding to the submit button */
+        }
+
+        .logout { 
+            float: right; /* Positions the logout button on the right side of the page */
+        }
     </style>
 </head>
-<body>
-    <h1>Invoice</h1>
-    <a href="/logout" class="logout">Logout</a>
-    <h2>Welcome, {{ session.username }}</h2>
+<body> <!-- Start of the body content -->
+
+    <h1>Invoice</h1> <!-- Main title of the page -->
+    
+    <a href="/logout" class="logout">Logout</a> <!-- Logout link, positioned on the right -->
+    
+    <h2>Welcome, {{ session.username }}</h2> <!-- Displays a welcome message with the username stored in the session -->
  
-    <h3>Add New Invoice</h3>
-    <form method="POST">
-        <input name="customer_name" placeholder="Customer Name" required>
-        <input name="customer_address" placeholder="Customer Address" required>
-        <input name="date" placeholder="DD/MM/YYYY" required>
-        <input name="invoice_no" placeholder="Invoice No" required>
-        <input name="description" placeholder="Description" required>
-        <input name="invoice_total" placeholder="Total" required>
-        <button type="submit">Add Invoice</button>
+    <h3>Add New Invoice</h3> <!-- Subheading for adding a new invoice -->
+    <form method="POST"> <!-- Form to submit a new invoice -->
+        <input name="customer_name" placeholder="Customer Name" required> <!-- Input for customer name -->
+        <input name="customer_address" placeholder="Customer Address" required> <!-- Input for customer address -->
+        <input name="date" placeholder="DD/MM/YYYY" required> <!-- Input for date, with a date format placeholder -->
+        <input name="invoice_no" placeholder="Invoice No" required> <!-- Input for invoice number -->
+        <input name="description" placeholder="Description" required> <!-- Input for description of the invoice -->
+        <input name="invoice_total" placeholder="Total" required> <!-- Input for the total amount of the invoice -->
+        <button type="submit">Add Invoice</button> <!-- Submit button to add the new invoice -->
     </form>
  
-    <h3>Invoices</h3>
+    <h3>Invoices</h3> <!-- Subheading for the list of invoices -->
+    
+    <!-- Table to display all invoices -->
     <table>
         <tr>
-            <th>Name</th>
-            <th>Invoice No</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>Name</th> <!-- Column header for customer name -->
+            <th>Invoice No</th> <!-- Column header for invoice number -->
+            <th>Total</th> <!-- Column header for invoice total -->
+            <th>Status</th> <!-- Column header for the invoice status -->
+            <th>Actions</th> <!-- Column header for actions like edit and delete -->
         </tr>
-        {% for invoice in invoices %}
+
+        <!-- Loop through each invoice and display it in the table -->
+        {% for invoice in invoices %} 
         <tr>
-            <td>{{ invoice[2] }}</td>
-            <td>{{ invoice[5] }}</td>
-            <td>£{{ "%.2f"|format(invoice[7]) }}</td>
+            <td>{{ invoice[2] }}</td> <!-- Customer name (index 2) -->
+            <td>{{ invoice[5] }}</td> <!-- Invoice number (index 5) -->
+            <td>£{{ "%.2f"|format(invoice[7]) }}</td> <!-- Invoice total formatted to 2 decimal places (index 7) -->
             <td>
+                <!-- Displays the status of the invoice if it exists; otherwise, it shows "Unpaid" -->
                 {% if invoice[8] %}
-                    {{ invoice[8] }}
+                    {{ invoice[8] }} 
                 {% else %}
                     Unpaid
                 {% endif %}
             </td>
             <td>
-                <a href="/edit/{{ invoice[0] }}">Edit</a> |
-                <a href="/delete/{{ invoice[0] }}">Delete</a>
+                <!-- Edit and delete actions for each invoice -->
+                <a href="/edit/{{ invoice[0] }}">Edit</a> | <!-- Link to the edit page for this invoice (using invoice ID) -->
+                <a href="/delete/{{ invoice[0] }}">Delete</a> <!-- Link to delete this invoice (using invoice ID) -->
             </td>
         </tr>
         {% endfor %}
     </table>
+
 </body>
 </html>

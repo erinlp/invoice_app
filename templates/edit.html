@@ -1,44 +1,73 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Invoice</title>
+<!DOCTYPE html> <!-- Declares the document type as HTML5, ensuring it's interpreted as an HTML5 document -->
+<html> <!-- Start of the HTML document -->
+<head>  <!-- Head section where metadata and styles are defined -->
+    <title>Edit Invoice</title>  <!-- Page title that appears in the browser tab -->
     <style>
-        body { font-family: Arial; background: #f4f4f4; padding: 20px; }
-        input, select { padding: 5px; margin: 5px; }
-        button { padding: 5px 10px; }
+        /* Internal CSS styles to format the page */
+        body { 
+            font-family: Arial; /* Sets the font of the body text to Arial */
+            background: #f4f4f4; /* Gives the background a light grey color */
+            padding: 20px; /* Adds padding around the page */
+        }   
+        input, select { 
+            padding: 5px; /* Adds padding inside input and select elements */
+            margin: 5px; /* Adds margin around input and select elements */
+        }
+        button { 
+            padding: 5px 10px; /* Adds padding to the button for better spacing */
+        }
     </style>
 </head>
-<body>
-    <h1>Edit Invoice</h1>
-    <form method="POST">
+<body> <!-- Start of the body section where the content of the page is displayed -->
+    <h1>Edit Invoice</h1>  <!-- Main heading displayed at the top of the page -->
+    <form method="POST"> <!-- Form element to submit data to the server using the POST method -->
 
+        <!-- Customer Name Field -->
         <label>Customer Name</label><br>
-        <input name="customer_name" value="{{ invoice[2] }}" required><br><br>
+        <input name="customer_name" value="{{ invoice[2] }}" required> <!-- Input field for customer name, populated with the value from the invoice data -->
+        <br><br> <!-- Line breaks for spacing -->
 
+        <!-- Customer Address Field -->
         <label>Customer Address</label><br>
-        <input name="customer_address" value="{{ invoice[3] }}" required><br><br>
+        <input name="customer_address" value="{{ invoice[3] }}" required> <!-- Input field for address, populated with the invoice's address -->
+        <br><br> <!-- Line breaks for spacing -->
 
+        <!-- Date Field -->
         <label>Date</label><br>
-        <input name="date" value="{{ invoice[4] }}" required><br><br>
+        <input name="date" value="{{ invoice[4] }}" required> <!-- Input field for the date, populated with the invoice's date -->
+        <br><br> <!-- Line breaks for spacing -->
 
+        <!-- Invoice Number Field -->
         <label>Invoice Number</label><br>
-        <input name="invoice_no" value="{{ invoice[5] }}" required><br><br>
+        <input name="invoice_no" value="{{ invoice[5] }}" required> <!-- Input field for invoice number, populated with the invoice's number -->
+        <br><br> <!-- Line breaks for spacing -->
 
+        <!-- Description Field -->
         <label>Description</label><br>
-        <input name="description" value="{{ invoice[6] }}" required><br><br>
+        <input name="description" value="{{ invoice[6] }}" required> <!-- Input field for the description of the invoice -->
+        <br><br> <!-- Line breaks for spacing -->
 
+        <!-- Invoice Total Field -->
         <label>Invoice Total</label><br>
-        <input name="invoice_total" value="{{ invoice[7] }}" required><br><br>
-        
+        <input name="invoice_total" value="{{ invoice[7] }}" required> <!-- Input field for the total amount of the invoice -->
+        <br><br> <!-- Line breaks for spacing -->
+
+        <!-- Status Field (Dropdown menu to select the invoice status) -->
         <label>Status</label><br>
-        <select name="status">
-            <option value="Unpaid" {% if invoice[8] == "Unpaid" %}selected{% endif %}>Unpaid</option>
+        <select name="status"> <!-- Dropdown selection for the invoice status -->
+            <!-- Unpaid Option -->
+            <option value="Unpaid" {% if invoice[8] == "Unpaid" %}selected{% endif %}>Unpaid</option> 
+            <!-- Paid Option -->
             <option value="Paid" {% if invoice[8] == "Paid" %}selected{% endif %}>Paid</option>
-        </select><br><br>
- 
-        <button type="submit">Update Invoice</button>
- 
-    </form>
-    <a href="/">Back to Home</a>
+        </select><br><br> <!-- Line breaks for spacing -->
+
+        <!-- Submit Button to update the invoice -->
+        <button type="submit">Update Invoice</button> <!-- Button to submit the form data -->
+
+    </form> <!-- End of the form -->
+    
+    <!-- Link to navigate back to the home page -->
+    <a href="/">Back to Home</a> <!-- Hyperlink to return to the home page -->
+
 </body>
 </html>
