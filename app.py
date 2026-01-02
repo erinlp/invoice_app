@@ -1,6 +1,5 @@
 # Import the rquired libraries
 from flask import Flask, render_template, request, redirect, session
-import psycopg2
 import os
 import datetime
  
