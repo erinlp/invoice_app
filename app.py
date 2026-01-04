@@ -1,5 +1,6 @@
 # Import the rquired libraries
 from flask import Flask, render_template, request, redirect, session
+from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
 import os
 import datetime
@@ -77,10 +78,13 @@ def signup():   # Handles form submission
         try:
             conn = get_db()   # Insert new user into database
             cursor = conn.cursor()
+            hashed_password = generate_password_hash(password)
+
             cursor.execute(
                 "INSERT INTO users (username, password) VALUES (%s, %s) RETURNING id",
-                (username, password)
+                (username, hashed_password)
             )
+
             user_id = cursor.fetchone()[0]
             conn.commit()
             conn.close()
@@ -110,7 +114,7 @@ def login():
         user = cursor.fetchone()
         conn.close()
  
-        if not user or user[2] != password:   # Validate password
+        if not user or not check_password_hash(user[2], password):   # Validate password
             return render_template("login.html", error="Invalid login details")
  
         session["user_id"] = user[0]    # Store user info in session
