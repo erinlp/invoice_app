@@ -1,16 +1,16 @@
-# Import the rquired libraries
 from flask import Flask, render_template, request, redirect, session
-from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
 import os
 import datetime
- 
+import hashlib
+from werkzeug.security import generate_password_hash, check_password_hash
+
 app = Flask(__name__)   # Create flask application
 app.secret_key = "your_secret_key_here"   # Secret key to encrypt session data
- 
+
 # Get DATABASE_URL from Render environment
 DATABASE_URL = os.environ.get("DATABASE_URL")
- 
+
 # Database connection
 def get_db():
     return psycopg2.connect(DATABASE_URL)
@@ -44,14 +44,14 @@ def init_db():
  
     conn.commit()
     conn.close()
- 
+
 init_db()   # Run database setup when the app starts
- 
+
 # Helper functions
 def get_invoices():
     if "user_id" not in session:
         return []
- 
+
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute(
@@ -61,30 +61,27 @@ def get_invoices():
     invoices = cursor.fetchall()
     conn.close()
     return invoices
- 
+
 # Authentication routes
 @app.route("/signup", methods=["GET", "POST"])
-def signup():   # Handles form submission
+def signup():
     if request.method == "POST":
         username = request.form["username"].strip()
         password = request.form["password"].strip()
- 
+
         if not username or not password:    # Validate input
             return render_template("signup.html", error="All fields required")
- 
+
         if len(password) < 8:
             return render_template("signup.html", error="Password must be at least 8 characters")
- 
+
         try:
             conn = get_db()   # Insert new user into database
             cursor = conn.cursor()
-            hashed_password = generate_password_hash(password)
-
             cursor.execute(
                 "INSERT INTO users (username, password) VALUES (%s, %s) RETURNING id",
-                (username, hashed_password)
+                (username, password)
             )
-
             user_id = cursor.fetchone()[0]
             conn.commit()
             conn.close()
@@ -92,18 +89,18 @@ def signup():   # Handles form submission
             session["user_id"] = user_id   # Log user in immediately
             session["username"] = username
             return redirect("/")
-       
+
         except psycopg2.IntegrityError:   # Check for duplicate usernames
             return render_template("signup.html", error="Username already exists")
- 
+
     return render_template("signup.html")
- 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form["username"].strip()
         password = request.form["password"].strip()
- 
+
         conn = get_db()
         cursor = conn.cursor()
 
@@ -113,139 +110,62 @@ def login():
         )
         user = cursor.fetchone()
         conn.close()
- 
-        if not user or not check_password_hash(user[2], password):   # Validate password
+
+        if not user or user[2] != password:   # Validate password
             return render_template("login.html", error="Invalid login details")
- 
+
         session["user_id"] = user[0]    # Store user info in session
         session["username"] = user[1]
         return redirect("/")
- 
+
     return render_template("login.html")
- 
+
 @app.route("/logout")
-def logout():   # Clear session data 
+def logout():   # Clear session to logout user
     session.clear()
     return redirect("/login")
- 
+
 # Invoice routes
 @app.route("/", methods=["GET", "POST"])
-def home():   
-    if "user_id" not in session:    # Require login
+def index():
+    if "user_id" not in session:
         return redirect("/login")
 
-    invoices = get_invoices()   # Show all invoices
- 
-    if request.method == "POST":    # Handle new invoice submission
+    error_invoice_total = None
+    error_date = None
+
+    if request.method == "POST":
         customer_name = request.form["customer_name"].strip()
         customer_address = request.form["customer_address"].strip()
         date = request.form["date"].strip()
         invoice_no = request.form["invoice_no"].strip()
         description = request.form["description"].strip()
-        invoice_total = request.form["invoice_total"].strip()
- 
-        if not all([customer_name, customer_address, date, invoice_no, description, invoice_total]):    # Check that all fields are filled
-            return render_template(
-                "index.html",
-                invoices=invoices,
-                error="All fields are required"
-            )
- 
         try:
-            invoice_total = float(invoice_total)    # Validate number and date formats
+            invoice_total = float(request.form["invoice_total"].strip())
+        except ValueError:   # Invalid total format
+            error_invoice_total = "Invalid invoice total format"
+            invoice_total = None
+
+        # Date validation (DD/MM/YYYY)
+        try:
             datetime.datetime.strptime(date, "%d/%m/%Y")
         except ValueError:
-            return render_template(
-                "index.html",
-                invoices=invoices,
-                error="Invalid date or invoice total format (DD/MM/YYYY)"
+            error_date = "Invalid date format. Use DD/MM/YYYY"
+
+        if not error_invoice_total and not error_date:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO invoices (user_id, customer_name, customer_address, date, invoice_no, description, invoice_total) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                (session["user_id"], customer_name, customer_address, date, invoice_no, description, invoice_total)
             )
- 
-        conn = get_db()    # Insert new invoice into database
-        cursor = conn.cursor()
-        cursor.execute("""
-        INSERT INTO invoices
-        (user_id, customer_name, customer_address, date, invoice_no, description, invoice_total)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (
-            session["user_id"],
-            customer_name,
-            customer_address,
-            date,
-            invoice_no,
-            description,
-            invoice_total
-        ))
-        conn.commit()
-        conn.close()
- 
-        return redirect("/")
- 
-    return render_template("index.html", invoices=invoices)
- 
-@app.route("/delete/<int:id>")
-def delete(id):
-    if "user_id" not in session:    # Require login
-        return redirect("/login")
- 
-    conn = get_db()
-    cursor = conn.cursor()  # Delete invoice for logged-in user only
-    cursor.execute(
-        "DELETE FROM invoices WHERE id=%s AND user_id=%s",
-        (id, session["user_id"])
-    )
-    conn.commit()
-    conn.close()
- 
-    return redirect("/")
- 
-@app.route("/edit/<int:id>", methods=["GET", "POST"])
-def edit(id):
-    if "user_id" not in session:    # Require login
-        return redirect("/login")
- 
-    conn = get_db()
-    cursor = conn.cursor()
- 
-    cursor.execute(
-        "SELECT * FROM invoices WHERE id=%s AND user_id=%s",
-        (id, session["user_id"])    # Fetch invoice to edit
-    )
-    invoice = cursor.fetchone()
- 
-    if request.method == "POST":    # Handle invoice submission 
-        customer_name = request.form["customer_name"]
-        customer_address = request.form["customer_address"]
-        date = request.form["date"]
-        invoice_no = request.form["invoice_no"]
-        description = request.form["description"]
-        invoice_total = float(request.form["invoice_total"])
-        status = request.form.get("status", "Unpaid")
- 
-        cursor.execute("""
-        UPDATE invoices
-        SET customer_name=%s, customer_address=%s, date=%s,
-            invoice_no=%s, description=%s, invoice_total=%s, status=%s
-        WHERE id=%s AND user_id=%s
-        """, (
-            customer_name,
-            customer_address,
-            date,
-            invoice_no,
-            description,
-            invoice_total,
-            status,
-            id,
-            session["user_id"]
-        ))  # Update invoice 
- 
-        conn.commit()
-        conn.close()
-        return redirect("/")
- 
-    conn.close()
-    return render_template("edit.html", invoice=invoice)
- 
-# Run app 
+            conn.commit()
+            conn.close()
+            return redirect("/")
+
+    invoices = get_invoices()
+    return render_template("index.html", invoices=invoices, error_invoice_total=error_invoice_total, error_date=error_date)
+
 if __name__ == "__main__":
     app.run(debug=True)

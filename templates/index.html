@@ -56,12 +56,20 @@
     {% endif %}
 
     <form method="POST"> <!-- Form to submit a new invoice -->
-        <input name="customer_name" placeholder="Customer Name" required> <!-- Input for customer name -->
-        <input name="customer_address" placeholder="Customer Address" required> <!-- Input for customer address -->
-        <input name="date" placeholder="DD/MM/YYYY" required> <!-- Input for date, with a date format placeholder -->
-        <input name="invoice_no" placeholder="Invoice No" required> <!-- Input for invoice number -->
-        <input name="description" placeholder="Description" required> <!-- Input for description of the invoice -->
-        <input name="invoice_total" placeholder="Total" required> <!-- Input for the total amount of the invoice -->
+        <input name="customer_name" placeholder="Customer Name" value="{{ request.form.customer_name }}" required> <!-- Input for customer name -->
+        <input name="customer_address" placeholder="Customer Address" value="{{ request.form.customer_address }}" required> <!-- Input for customer address -->
+        <input name="date" placeholder="DD/MM/YYYY" value="{{ request.form.date }}" required> <!-- Input for date, with a date format placeholder -->
+        <input name="invoice_no" placeholder="Invoice No" value="{{ request.form.invoice_no }}" required> <!-- Input for invoice number -->
+        <input name="description" placeholder="Description" value="{{ request.form.description }}" required> <!-- Input for description of the invoice -->
+        <input name="invoice_total" placeholder="Total" value="{{ request.form.invoice_total }}" required> <!-- Input for the total amount of the invoice -->
+        
+        {% if error_invoice_total %}
+            <p style="color: red;">{{ error_invoice_total }}</p> <!-- Error message for invalid total -->
+        {% endif %}
+        {% if error_date %}
+            <p style="color: red;">{{ error_date }}</p> <!-- Error message for invalid date format -->
+        {% endif %}
+        
         <button type="submit">Add Invoice</button> <!-- Submit button to add the new invoice -->
     </form>
  
